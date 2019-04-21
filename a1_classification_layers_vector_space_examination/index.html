@@ -56,7 +56,9 @@ In this introductory article an example of such space is overlooked using the mu
 We examine the basic facts about the aforementioned space and illustrate it for a clearer understanding of how it functions. The facts discussed here also apply to general multinomial regression.
 </p>
 
-<h4>Notation</h4>
+<div class="fold h4">
+<div>Notation Reference<pre><div></div><div></div></pre></div>
+<div>
 <p>
 Since there is no universal notation conventions for NN models, this section briefly clarifies the definitions that are used in this and further articles.
 Consider a basic NN model with <em>L</em> layers, then the following scheme illustrates the <span class="tooltip">whole</span><ins>only the <em>[1]</em>st layer is shown in detail, but all other layers are alike</ins> model sctructure:
@@ -86,6 +88,9 @@ And, thus, for simplicity we exclude the superscript indexes <em>[l]</em> from a
 <span class="tooltip">\(n^{L-1}\)</span><ins>dimensionality of the inputs <em>x</em></ins> will be simply denoted as <em>n</em>, while <span class="tooltip">\(n^{L}\)</span><ins>dimensionality of the output activations <em>a</em></ins> will be called <em>N</em>, which is at the same time the number of possible classes.
 </p>
 </div>
+</div>
+
+</div>
 
 <h4>Softmax layer intro</h4>
 <div class="col">
@@ -102,7 +107,7 @@ In these series of articles we will study the properties of this space. Though, 
 </p>
 
 <p>
-So as mentioned above softmax layer produces vectors of estimated probabilities for each input vector <em>x</em>. Such vectors are stored as rows of matrix \(\mathrm{A}\) and can be written explicitly as
+So as mentioned above softmax layer produces vectors of estimated probabilities for each input vector <em>x</em>. Such vectors are stored as rows of activation matrix \(\mathrm{A}\) for each input <em>x</em> and can be written explicitly as
 $$\begin{equation}a = (\frac{e^{w_1 \cdot x + w_{1,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}},\; \dots \;, \frac{e^{w_N \cdot x + w_{N,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}})\end{equation} \label{r1}$$
 Each element of vector <em>a</em> can be refered to as softmax function for a class <em>i</em> or \(\mathrm{softmax}_i(x)\), since it's an estimation of probability that <em>x</em> belongs to the corresponding class \(i=1\dots N\). Note that the sum of elements of vector <em>a</em> always equals to <b>1</b> by design, which guarantees that the estimated probabilities are a valid probabilistic distribution.
 Exponential functions also grant that the values will be greater than zero. The arguments to the exponential functions are elements of vector <em>z</em>, which is the linear part of the layer:

@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <script type="text/javascript" src="/com/jquery.js"></script>
+    <script type="text/javascript" src="/com/jBox.min.js"></script>
+    <link href="/com/eh.css" rel="stylesheet" type="text/css">
+    <link href="/com/jBox_eh.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src='/com/MathJax/MathJax_conf.js'></script>
+	<script type="text/javascript" src='/com/MathJax/MathJax.js?config=TeX-AMS_HTML-full' async></script><!-- v2.7.5 -->
+    
+    <meta name="Description" content="Modest Contributions / Experiments in the Field of Machine Learning and Artificial Intelligence.">
+    <title>Electrifying Haze</title>
+  </head>
+  <body>
+    <div id="headbox">
+		<a href="/"><div id="headtitle"> <div></div><div class="overlay"></div> </div></a>
+		<div id="headabout_anchor"><div id="headabout_box"><div id="headabout_arrow"></div><div id="headabout_text"></div></div></div>
+	</div>
+	<div id="headline"><div>God Is a Vector</div></div>
+	<span class="reference"></span>
+	<div id="aboutbox">
+		<div id="aboutcontent">
+			<div id="aboutportrait"></div>
+			<div id="aboutarrow_push"></div><div class="aboutarrow" id="aboutarrow_in"><div></div></div>
+			<div id="abouttext">
+			<span class="com">While dreaming our brain deems a random awkward flow of events as the reality. Therefore, how can we be sure that while awake our
+			consciousness doesn't perceive just an illusion? We have our hands and eyes but they may lie,
+			and, thus, we must doubt almost any fact we have learnt about the world. However, consider such things as mathematics, information theory and logic - 
+			should we also doubt their correctness? These theories deal only with abstract definitions and by, increasingly, elemenating various posibilities
+			they can deduce endlessly complex structures and conclusions.
+			So they form some kind of a separate informational space, which stays true independently of the material world or any mind presence.
+			Isn't it rather beautiful that "logic" broadly, while not being observable in the world by itself, and essentially
+			existent only within humen brain or computer systems, in a sense is actually more real than anything else we know about...</span>
+			<span style="line-height: 1.2">
+			<br><br>
+			This site is a personal sandbox for my modest contributions / experiments in the fields of <i>machine learning</i> and <i>artificial intelligence</i>.
+			Author would like to describe himself as a garage researcher and hobbyist math addict. Also I am one of the mentors for the <a target="_blank" href="https://www.coursera.org/specializations/deep-learning">DeepLearning.ai Coursera specialization</a>.
+			Contact me by e-mail: <i>romantic.comedy.dude@gmail.com</i>
+			<br><br>
+			Generally I am quite a lazy reader and would like to appologize if the ideas I bring up in my articles have been described already elsewhere, but at least I try to be original here apart from the content I vividly reference myself.
+			The site's licensed under <a href="/LICENSE.txt" target="_blank">Creative Commons Attribution 4.0</a>. Please, reference my articles in case you are going to use them in your paper / work.
+			</span>
+			</div>
+			
+			<div style="clear:both;"></div>
+		</div>
+		<div class="aboutarrow" id="aboutarrow_out"><div></div></div>
+	</div>
+	<div id="cbox">
+<h2>Classification Layer's Vector Space: Part I - Examination</h2>
+<p class="abstract">
+In a classification <span class="tooltip">NN</span><ins>Neural Network</ins> of any complexity or structure the last layer's weights and activation function define a specific vector space, which attributes any activation of the previous layer to a certain class.
+In this introductory article an example of such space is overlooked using the multiclass Softmax last layer, which is a common classification NN setup.
+We examine the basic facts about the aforementioned space and illustrate it for a clearer understanding of how it functions. The facts discussed here also apply to general multinomial regression.
+</p>
+
+<h4>Notation</h4>
+<p>
+Since there is no universal notation conventions for NN models, this section briefly clarifies the definitions that are used in this and further articles.
+Consider a basic NN model with <em>L</em> layers, then the following scheme illustrates the <span class="tooltip">whole</span><ins>only the <em>[1]</em>st layer is shown in detail, but all other layers are alike</ins> model sctructure:
+</p>
+<div class="img" id="img1"><div style="padding-bottom: 34.27%">
+<object data="notation_scheme.svg" type="image/svg+xml"><img src="notation_scheme.svg" alt="basic neural network model" /></object>
+</div>
+<pre></pre>
+</div>
+<div class="col">
+<ul>
+<li>Superscript <em>[l]</em> denotes a quantity associated with the \(l^{th}\) layer</li>
+<li>\(m\) is the number of training samples</li>
+<li>\(n^{[l]}\) is the <span class="tooltip">number of units</span><ins>which is the dimensionality of layer <em>l</em>'s activations</ins> in layer <em>l</em></li>
+<li>Matrix \(\mathbf{X}\) is the training set data with the <span class="tooltip">first dimension</span><ins>rows of the matrix</ins> containing individual training samples</li>
+<li>Matrices \(\mathrm{A}^{[l]}\) contain <span class="tooltip">activations</span><ins>which are final outputs of layer <em>l</em></ins> of each layer <em>l</em>. <span class="tooltip">First dimension</span><ins>rows of a matrix</ins> of these matrices contain latent vector representations for each training sample in the layer <em>l</em>. Matrix \(\mathbf{X}\) can also be called \(\mathrm{A}^{[0]}\) and \(n^{[0]}\) is the dimensionality of <span class="tooltip">training samples</span><ins>for instance the number of pixels in a picture</ins></li>
+<li>Matrices \(\mathrm{W}^{[l]}\) contain <span class="tooltip">weights</span><ins>which are variables subject to optimization in NNs</ins> of each layer <em>l</em> and are used in matrix multiplication <span class="tooltip">(\(\cdot\))</span><ins>also denotes simple scalar vector products</ins> with \(\mathrm{A}^{[l-1]}\) to compute \(\mathrm{Z}^{[l]}\)</li>
+<li>\(g^{[l]}()\) is a non-linear activation function in layer <em>l</em>, which is applied to \(\mathrm{Z}^{[l]}\) to compute activations \(\mathrm{A}^{[l]}\)</li>
+<li>Lowercase letters \(x, a, w, z\) are used to represent individual elements of their respective upper case matrices when used with <span class="tooltip">2 lowerscript indices</span><ins>or more in some models</ins>. When these letters are used with only one index, then they represent a <span class="tooltip">full row</span><ins>or an entry of the first dimension in other words. It is colored <span class="cr">red</span> on the scheme above</ins> of their respective matrix. And without any lowerscript indexes they simply refer to <span class="tooltip">any row</span><ins>or data that can potentially be a row of the respective matrix</ins> of the matrix</li>
+<li>Vectors \(b^{[l]}\) contain <span class="tooltip">weight constants</span><ins>which are also subject to optimization in NNs</ins>. Individual elements of these vectors, however, are called \(w_{1,0}\dots w_{n^{[l]},0}\) because vector \(b^{[l]}\) can be thought of as an <span class="tooltip">extra column</span><ins>indeed in some specifications it is included in matrix \(\mathrm{W}^{[l]}\), for instance, if homogeneous coordinates are used for \(\mathrm{A}^{[l-1]}\)</ins> of the matrix \(\mathrm{W}^{[l]}\)</li>
+</ul>
+</div>
+<div class="col">
+<p>
+However, in the series of articles "Classification layer's vector space" we are going to overlook only the very last layer <em>L</em> of a NN with the activation function \(g^{[L]}=\mathrm{softmax(Z}^{[L]})\).
+And, thus, for simplicity we exclude the superscript indexes <em>[l]</em> from all the variables, since most of them would refer to the layer <em>L</em>. Except matrix \(\mathrm{A}^{[L-1]}\), which is the input to the layer <em>L</em> generated by the previous layer - we will be calling this matrix \(\mathrm{X}\) or <em>x</em> for individual rows here, which also emphasizes that we are looking at them as <span class="tooltip">independent variables</span><ins>In fact they depend on the weights of previous layers and training data but for the purpose of this article we pretend that they are independent inputs (just like when the backpropagation chain rule is applied it is also pretended at some step that \(\mathrm{A}^{[L-1]}\) is independent to find its intermediate gradient</ins> in these articles, just like if it was the initial training set data.
+<span class="tooltip">\(n^{L-1}\)</span><ins>dimensionality of the inputs <em>x</em></ins> will be simply denoted as <em>n</em>, while <span class="tooltip">\(n^{L}\)</span><ins>dimensionality of the output activations <em>a</em></ins> will be called <em>N</em>, which is at the same time the number of possible classes.
+</p>
+</div>
+
+<h4>Softmax layer intro</h4>
+<div class="col">
+<p>
+When <span class="tooltip">plain natural data</span><ins>a raster image or a sound wave</ins> is feeded to a NN its purpose is to convert the data from an obfuscated non-linear form to a simplier and "more linear" representation for that data by applying linear and non-linear transformations through a set of logical constructs called layers.
+At some late layer (typically <em>L-1</em>) a data sample achieves its simpliest but hidden and unclear for human vector <span class="tooltip">representation</span><ins>which in some contexts refered to as <i>latent variable</i> or an <i>embedding</i></ins> for that model. And then the latent representation can be used in various useful ways depending on the task of the model. In this article we consider a classification task, where initial data samples should be attributed to their respective class or type.
+A common way of setting up such model is to add the last layer with the \(\mathrm{softmax}()\) activation function, which translates latent representations into estimates of probabilities that a data sample belongs to each of the possible classes. So every data sample feeded to the NN is given its own probabilities vector which is passed to the cost function at the final stage, subject to optimization.
+</p>
+<p>
+Despite not easily explicable internal mechanics of a NN, one important thing that should be understood here is that <span class="important">softmax layer is capable of classifying not only latent variables generated from the training or validation data, but actually just any vector <em>x</em> with appropriate dimensionality</span>. In that sense softmax layer creates a special kind of space, where every point of this space is associated with a <span class="tooltip">class</span><ins>more strictly with a distribution over possible classes, since as mentioned above softmax generates a vector of probabilities</ins>.
+</p>
+<p>
+In these series of articles we will study the properties of this space. Though, unlike works which study semantic properties of word vector representations (for instance inspiring papers by Mikolov et al.<span class="ref">[1]</span>, which demonstrated vector arithmetics for discovering word similarities), we focus more on mathematical properties here.
+</p>
+
+<p>
+So as mentioned above softmax layer produces vectors of estimated probabilities for each input vector <em>x</em>. Such vectors are stored as rows of matrix \(\mathrm{A}\) and can be written explicitly as
+$$\begin{equation}a = (\frac{e^{w_1 \cdot x + w_{1,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}},\; \dots \;, \frac{e^{w_N \cdot x + w_{N,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}})\end{equation} \label{r1}$$
+Each element of vector <em>a</em> can be refered to as softmax function for a class <em>i</em> or \(\mathrm{softmax}_i(x)\), since it's an estimation of probability that <em>x</em> belongs to the corresponding class \(i=1\dots N\). Note that the sum of elements of vector <em>a</em> always equals to <b>1</b> by design, which guarantees that the estimated probabilities are a valid probabilistic distribution.
+Exponential functions also grant that the values will be greater than zero. The arguments to the exponential functions are elements of vector <em>z</em>, which is the linear part of the layer:
+$$\begin{equation}z = (w_1 \cdot x + w_{1,0},\;\dots\;,w_N \cdot x + w_{N,0})\end{equation}\label{r2} $$
+</p>
+<p>
+<em>z</em> consists of simple <i>scalar products</i> of weight vectors \(w_1\dots w_N\) with the vector <em>x</em> plus weight constants.
+It can be noticed that function <span class="important">\(\mathrm{softmax}_i(z)\) is monotonic in respect to every element of vector <em>z</em></span>.
+Indeed, elements of vector <em>z</em> can be divided into 2 groups: the ones that are present only in the denominator of \(\mathrm{softmax}_i\) and the single one that is included both into numerator and denominator, which we will be calling <span class="tooltip">key element</span><ins>it is also the \(i^{th}\) element of vector <em>z</em></ins>.
+The first group elements are monotonically decreasing for \(softmax_i\), because any gain in denominator reduces fraction's value. Any gain in the key element, on the other hand, forces \(\mathrm{softmax}_i\) to incease, because with other components of denominator staying put this gain reduces the relative difference between numerator and denominator.
+In other words, when the \(i^{th}\) element of a vector <em>z</em> is increased with everything else unchanged, then the probability of the \(i^{th}\) class also increases, but falls for all other classes.
+Considering this fact and despite the non-linear nature of the softmax activation, we can learn some basics of the softmax's layer vector space by studying only vector <em>z</em> itself, which is done in the next section.
+</p>
+</div>
+
+<h4>Linear Space</h4>
+<div class="col">
+<p>
+In this part we examine the space formed by vector <em>z</em> specified in \eqref{r2}, which is simplier to start with and at the same time is highly related to the full activation vector <em>a</em>. 
+</p>
+<p>
+As it was discussed in the previous section probability of \(i^{th}\) class increases only when the value of \(i^{th}\) <i>key element</i> of <em>z</em> increases. Since <em>x</em> is given for this layer, then value of \(i^{th}\) element can be altered only by vector \(w_i\) and scalar \(w_{i,0}\). So we can conclude that <span class="important"><span class="tooltip">vector \(w_i\)</span><ins>\(i^{th}\) row of matrix \(\mathrm{W}\)</ins> and scalar \(w_{i,0}\) are <b>defining</b> for the class <em>i</em></span>.
+Scalar product \(w_i \cdot x = |w_i| |x| \cos(w_i, x)\) according to the geometric definition of the scalar product, and considering this representation we can make a judgement that the direction of vector <em>x</em> and \(w_i\) should <span class="tooltip">approximately coincide</span><ins>because it gives higher values of \(\cos(w_i, x)\)</ins> for the probability of class <em>i</em> to be high.
+</p>
+<p>
+However, to get a thorough understanding of what inputs <em>x</em> induce high values for each key element of vector <em>z</em> we can use <span class="tooltip">contours graphs</span><ins>this graph is similar to elevation maps used in cartography, where lines denote one elevation level and colors are also used to distinguish low and high elevations. In our case only elevations are replaced by the values inside vector <em>z</em></ins> for the elements of vector <em>z</em>.
+The graph depicts all possible points <em>x</em> and so it is an <em>n</em>-dimensional graph. Also vectors \(w_i\) can be depicted on the same graph since they have the same dimensionality as <em>x</em> and serve as the reference direction for the class that they define. We start with this step:
+</p>
+<div class="img" id="img2"><div style="padding-bottom: 100%">
+<object data="a1_vecs.svg" type="image/svg+xml"><img src="a1_vecs.svg" alt="illustration for vectors w" /></object>
+</div>
+<p>figure 1 - graphic representation for vectors \(w_i\)</p>
+<pre></pre>
+</div>
+<p>
+<span class="scroll" data-target="#img2">Figure 1</span> illustrates one particular weight matrix
+$$\mathrm{W} = \begin{pmatrix}
+1 & 2\\ 
+-2 & 1\\ 
+0.2 & -1
+\end{pmatrix}$$
+which specifies a softmax layer with the dimensionality of inputs <em>n=2</em> and the number of classes <em>N=3</em>. We will be using this example for all further illustrations.
+Even though such setup is feasible, it is important to note that normally in real NN models <em>n>N</em> and <em>n</em> is greater than 20, which increases performance.
+Our example is artificial, so that we can depict vectors in a 2-dimensional graph, however, it is good enough for our purpose as the main properties are kept and at the same time it is clear how to extend this space to higher dimensions.
+</p>
+<p>Now we start adding contours for the <span class="tooltip">elements of <em>z</em></span><ins>as they are responsible for the probability of their respective class, we will use its own color for each group of contours to emphasize its attribution to a particular class. So colors on the graph are associated with classes</ins>, assuming that constants vector <em>b</em> is zero:</p>
+<div class="img" id="img3"><div style="padding-bottom: 79.36%">
+<object data="a1_contours.svg" type="image/svg+xml"><img src="a1_contours.svg" alt="contours of z" /></object>
+</div>
+<p>figure 2 - contours of <em>z</em></p>
+<pre></pre>
+</div>
+<p>
+As you can see, the contours for each class are <span class="tooltip">perpendicular lines</span><ins>it means that all points <em>x</em> on one line are such that they yield the same value for the respective scalar product \(w_i \cdot x\)</ins> to the defining vectors \(w_i\).
+The more intense is the color, the greater is the value of the respective element of <em>z</em>. All values that are below zero are rendered completely transparent to prevent overlapping of contours everywhere, but keep in mind that values also vary there for each class.
+Areas with an intense color, which doesn't overlap with another intense color are those, which give high probability to one class and will be called <i>clean</i>. Areas where at least 2 colors overlap are <b>dirty</b> and will give some mixed distribution of probabilities for classes with the intense colors. Common classification NN searches only for the first type of points to assign one class to one data sample. So the first conclusion that we can make here is that <span class="important">softmax's vector space contains a lot of mixed-probability and, thus, useless areas</span>.
+The second fact to note is that <span class="important">the pairwise angles between vectors \(w_i\) must be wide enough for the clean areas to occupy larger space</span>. For instance the clean area for \(\cbr{{w_3}}\) is relatively larger <span class="scroll" data-target="#img3">(fig. 2)</span>, due to \(\cbr{{w_3}}\) having greater angles with \(\cbg{{w_1}}, \cby{{w_2}}\). Pairwise angles between vectors <em>w</em> measured in real trained classification NNs also support this statement and are mostly above 70 degrees<span class="ref">[4]</span>.
+</p>
+<p>Next we take a look at how basic transformations affect this space:</p>
+</div>
+
+<div class="col internal" style="margin-top: 60px">
+<div class="img" id="img4"><div style="padding-bottom: 71.42%; width: 71.42%">
+<object data="a1_scale.svg" type="image/svg+xml"><img src="a1_scale.svg" alt="effect of scaling on linear space" /></object>
+</div>
+<p>figure 3 - effect of scaling <em>w</em> in linear space</p>
+<pre></pre>
+</div>
+<div class="img" id="img6"><div style="padding-bottom: 71.42%">
+<object data="a1_const.svg" type="image/svg+xml"><img src="a1_const.svg" alt="effect of constants on linear space" /></object>
+</div>
+<p>figure 4 - effect of constant weights <em>b</em> in linear space</p>
+<pre></pre>
+</div>
+</div>
+<div class="col">
+<p>
+In <span class="scroll" data-target="#img4">figure 3</span> the length of the vectors \(w_i\) is being altered, while the direction's kept. It results in scaling of contours along the defining vectors.
+As can be seen, the length of weights also affects the size of the clean area for their classes. For instance, when \(\cbr{{w_3}}\) is twice as short as 2 other vectors its clean area has dim color, meaning that input vector <em>x</em> on the contrary <span class="tooltip">must be long</span><ins>or in other words less points <em>x</em> belong to the \(3^{rd}\) class with a high probability, thus, the clean area is smaller</ins> to hit area with the intense <span class="cbr">red</span> color.
+</p>
+<p>
+<span class="scroll" data-target="#img6">Figure 4</span> demonstrates the effect of changing the constant weights vector <em>b</em>. Constant weights translate contours along vectors \(w_i\) in the <span class="tooltip">opposite direction</span><ins>positive constant \(w_{i,0}\) shift contours in the opposite direction of vector \(w_i\), and vice versa</ins>.
+So constant weights are another mean of controlling clean areas by linearly shifting them.
+However, the strength of the translation will again depend on the length of vector \(w_i\): note that in the <span class="scroll" data-target="#img6">figure 4</span> both constants \(w_{1,0} \text{ and } w_{3,0}\) have the same absolute change <span class="tooltip">2</span><ins>though the direction is opposite</ins>, but on the graph <span class="cbr">red countours</span> are moved much further compared to the <span class="cbg">green contours</span> and it is due to \(\cbg{{w_1}}\) being longer than \(\cbr{{w_3}}\).
+</p>
+<p>These effects will be clarified further yet in the next section.</p>
+</div>
+
+
+
+
+<h4>Softmax Layer's Class Space</h4>
+<div class="col">
+<p>
+In the previous section we have overlooked an intermediate space for the linear vector <em>z</em>. Now we will add the non-linear \(\mathrm{softmax}\) activation to <em>z</em>, which converts it to the vector of probabilities <em>a</em> \eqref{r1}.
+We again use the <i>contours graph</i> to depict this space and again the contours are plotted for each element of the vector <em>a</em> with its own color and \(b=0\):
+</p>
+<div class="img" id="img7"><div style="padding-bottom: 79.36%;">
+<object data="a1_soft_contours.svg" type="image/svg+xml"><img src="a1_soft_contours.svg" alt="softmax space embedding" /></object>
+</div>
+<p>figure 5 - contours of <em>a</em></p>
+<pre></pre>
+</div>
+<p>
+This picture can be thought of as just a specific transformation of the previous one, which it is in fact. The color this time is used to differentiate probabilities, and the points with the highest probabilities per class are drawn with the brightest colors. Areas where probabilities are below 50% are transparent for each set of contours, which ensures that contours <span class="tooltip">don't intersect</span><ins>because if one class has at least 50% probability then no other class can reach 50% in the same point (note that probabilities can't equal to zero too, they only approach it due to softmax formula)</ins> and helps to identify clean areas with one dominant class.
+Thus, the center point of the graph is rendered completely transparent as all classes there have only 33% probability.
+</p>
+<p>
+Area which is associated with the <span class="cbr">\(3^{rd}\) class</span> looks almost the same as 2 other areas, because as mentioned before vector \(\cbr{{w_3}}\) has wide angles with 2 other vectors, which increases the area but at the same time vector \(\cbr{{w_3}}\) is shorter than other 2, which decreases the area. Overall, these 2 differences compensate each other.
+</p>
+<p>
+Another important thing to note, is that contours are not symmetrical anymore to the defining vectors \(w_i\) but instead now there are new vectors of symmetry, which we will find next while trying to alter constant weights <em>b</em>. So let's have a look at what they do:
+</p>
+</div>
+<div class="col" style="margin-top: 80px;">
+<div class="img" id="img8"><div style="padding-bottom: 71.42%;">
+<object data="a1_soft_const.svg" type="image/svg+xml"><img src="a1_soft_const.svg" alt="effect of constants on softmax" /></object>
+</div>
+<p>figure 6 - effect of constant weights in class space</p>
+<pre></pre>
+</div>
+<p>
+One single constant now has an effect on all the contours unlike before, because it is included in all the elements of <em>a</em>. However, all the contours are still moving linearly. While it is quite obvious from the picture, we still need to explain it analytically.
+For simplicity let's consider only the <span class="cbg">\(1^{st}\) class</span> contours and so the first element of <em>a</em>: \(\frac{e^{w_1 \cdot x + w_{1,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}}\). If we assume that altering \(w_{1,0}\) results in a linear move of the contours, then we will be able to neutralize this move by shifting vector <em>x</em> by some unknown vector <em>c</em>, which is a standard way of translating a graph:
+$$
+\bullet \frac{e^{w_1 \cdot (x+c) + w_{1,0}}}{\sum_{j=1}^{N}e^{w_j \cdot (x+c) + w_{j,0}}} = \quad\text{(divide by numerator)}\\
+\bullet = \frac{1}{1 + \sum_{j\neq 1} e^{(w_j-w_1) \cdot (x+c) + w_{j,0} - w_{1,0}}}
+$$
+now we show that the arguments of the exponential functions can equal to what they were before adding <em>c</em> and \(w_{1,0}\)
+$$
+\bullet \left\{\begin{matrix}
+{(w_2-w_1) \cdot (x+c) + w_{2,0} - w_{1,0}} = {(w_2-w_1) \cdot x + w_{2,0}} \\
+{(w_3-w_1) \cdot (x+c) + w_{3,0} - w_{1,0}} = {(w_3-w_1) \cdot x + w_{3,0}}
+\end{matrix}\right.
+\bullet \left\{\begin{matrix}
+{(w_2-w_1) \cdot x + (w_2-w_1) \cdot c - w_{1,0}} = {(w_2-w_1) \cdot x } \\
+{(w_3-w_1) \cdot x + (w_3-w_1) \cdot c - w_{1,0}} = {(w_3-w_1) \cdot x }
+\end{matrix}\right.
+\circ \left\{\begin{matrix}
+(w_2-w_1) \cdot c = w_{1,0} \\
+(w_3-w_1) \cdot c = w_{1,0}
+\end{matrix}\right.
+$$
+By solving the last system of equations such <em>c</em> can be found and this <em>c</em> will be not dependent on <em>x</em> as it is not present in the system even, so this <em>c</em> will be able to neutralzie the effect of \(w_{1,0}\) completely.
+We may also multiply this <em>c</em> by -1 if we want to make it copy the effect of \(w_{1,0}\) instead.
+The last system has 2 equations and <span class="tooltip">2 unknown variables</span><ins>because <em>c</em> is 2 dimensional in our example</ins> and the system is linear, therefore, only one <em>c</em> exists which satisfies it.
+But in a general softmax layer there will be <em>N-1</em> equations and <em>n</em> unknown variables and so at least one solution will exist and <span class="important">constant weights <em>b</em> will translate the space linearly only if \(N\leq n+1\)</span>. And if \(N\gt n+1\), then the constant weights <em>b</em> transform the space in a more complex way. But as was mentioned before in real systems <em>n</em> is substantially greater than <em>N</em> and so the linear translation property stays true.
+All in all, <span class="important">constant weights <em>b</em> can be considered as a mean of adjusting the class space without changing its shape</span>.
+If \(N\lt n+1\) then multiple solutions <em>c</em> exist and the translation is linear still, but how is it possible? The subtlety is that the contours will be partly unchanging in respect to some directions and so multiple translation directions exist, which all result in the <span class="tooltip">same transformation</span><ins>for instance, if we had <em>N=2</em> in our example then the contours would be lines and lines can be translated in multiple directions but with the same result</ins>.
+</p>
+<p>
+The equations system for finding <em>c</em> doesn't have a general good looking solution, but for our particular case <em>c</em> will be some vector pointing in the <span class="important">perpendicular direction to the vector \(w_3 - w_2\)</span>. And it is not just a random direction, which satisfies the system, but actually it explicitly represents the direction of translation with \(w_{1,0}\).
+In the <span class="scroll" data-target="#img8">figure 6</span> this direction is clearly visible as the narrow line between the <span class="cbr">red</span> and the <span class="cby">yellow</span> area. And it's also easy to notice that it is at the same time the direction of the line of symmetry for the <span class="cbg">green</span> area.
+For a general softmax specification it may be not just a line of symmetry but an <span class="tooltip">(<em>n-N+2</em>)-dimensional plane of symmetry</span><ins>for our case it is (2-3+2=1)-dimensional plane, which is simply a line. For the case <em>N=3, n=3</em> it is a 2 dimensional plane for instance, and even the logic for constructing it will be the same: find vector \({w_3-w_2}\) and construct a perpendicular plane for it. Translation direction will be simply any vector inside that plane</ins>. But when <em>N=2</em> the contours are always linear though and it is hard to talk about symmetry in the common sense in this case.
+</p>
+<p>
+<span class="scroll" data-target="#img8">Figure 6</span> also emphasizes that constant weights \((w_{1,0},\;\dots,\;w_{3,0})\) are stackable and the contours can be translated linearly in some combined direction. The general rule would be:
+</p>
+<p class="important">
+For any linear translation of softmax's vector space there exists its own specific vector <em>b</em>, which satisfies it.
+</p>
+<p>
+For cases when <em>N&lt;n</em> it still remains true even though there are not enough linearly independent vectors \(w_i\) to cover all the directions in \(\mathbb{R}^n\), since the contours in that case are unchangeable in some directions and so the shifts in those directions would make no difference anyway.
+</p>
+<div class="img" id="img9"><div style="padding-bottom: 100%;">
+<object data="a1_soft_scale.svg" type="image/svg+xml"><img src="a1_soft_scale.svg" alt="effect of scaling weights on softmax" /></object>
+</div>
+<p>figure 7 - effect of scaling <em>w</em> in class space</p>
+<pre></pre>
+</div>
+</div>
+
+
+
+
+
+
+<h4>Convexity of the Class Space</h4>
+<div class="col">
+<p>
+As you might have noticed from the pictures above, the contours of the softmax function form a convex space, in a sense that if we have 2 <span class="tooltip">points</span><ins>which are activations of the previous layer in our context</ins> <span class="cr">A</span> and <span class="cb">B</span> which belong to one class with a certain probability <em class="co">p</em>, then any point on the line segment between <span class="cr">A</span> and <span class="cb">B</span> also belongs to the same class with the same or higher probability <span class="scroll" data-target="#img5">(fig. 8)</span>.
+<div class="img" id="img5"><div style="padding-bottom: 100%">
+<object data="a1_soft_convexity.svg" type="image/svg+xml"><img src="a1_soft_convexity.svg" alt="softmax convexity" /></object>
+</div>
+<P>figure 8 - contours of softmax form a convex space</p>
+<pre></pre>
+</div>
+It appears that this property stays true not only in our particular example but actually just for <span class="tooltip">any softmax layer</span><ins>any weight matrix values, number of classes and dimensionality of inputs</ins> configuration.
+More strictly and generally speaking the above statement can be formulated in the following way:
+</p>
+<p class="important">
+All points where softmax function for a certain class <em>i</em> yields a greater or equal probability than some threshold probability <em class="co">p</em> form a convex set:
+$$ \begin{equation} \begin{split} &\mathbf{X}=\left \{ x\in\mathbb{R}^n:\:\:\: \mathrm{softmax}_{i}(x)\equiv \frac{e^{w_i\cdot x + w_{i,0}}}{\sum_{j=1}^{N} e^{w_j\cdot x + w_{j,0}}}\geq \co{p}\right\} \\&\Rightarrow\mathbf{X}\text{ - convex set} \end{split} \end{equation}\label{ref1} $$
+</p>
+<p>
+It is an important property for us increasingly because in a real NN with many layers and weights we can take any set of training examples which belong to one class and then we know that if after training NN we calculate their respective activations in the last but one layer and think of any point, which lie <span class="tooltip">in between</span><ins>meaning any weighted average of these activations or in other words points from the convex hull formed by the activations</ins> these activations, then this point also belongs to the same class.
+In a NN with a high dimensionality of activations in the last but one layer these points "in between" can be relatively distant from each other and occupy huge volumes and still belong to the same class.
+We can think of different ways how to make use of these points "in between". For instance, we can add some extra conditions to the cost function regarding these points to try to improve the performance of the NN or we can take a random point "in between" and use it as a latent variable for a generative NN, which is supposed to produce output similar to our data (a <span class="tooltip">related</span><ins>in that model a normally distributed noise is added to the activations though instead of taking random points from the convex hull formed by these activations, but it is a similar approach</ins> example of such generative model can be found in the paper by DP.Kingma et al.<span class="ref">[2]</span>).
+</p>
+</div>
+
+<div class="fold">
+<div>Formal Proof<pre><div></div><div></div></pre></div>
+<div>
+<p>Note that we omit constants from this proof for simplicity and because they don't affect any stages of the proof. A set is convex if any 2 random points <em class="cr">A</em> and <em class="cb">B</em> from the set when connected form a line segment, which also belongs to the same set. For our particular case it can be stated as
+$${\forall \cr{A},\cb{B} \in\mathbf{X}\subset\mathbb{R}^n:}\; {\frac{e^{w_i\cdot \cr{A}}}{\sum_{j=1}^{N} e^{w_j\cdot \cr{A}}}\geq \co{p}}\;\; \text{and}\;\; {\frac{e^{w_i\cdot \cb{B}}}{\sum_{j=1}^{N} e^{w_j\cdot \cb{B}}}\geq \co{p}}\\ \text{then}\; {\frac{e^{w_i\cdot (t\cr{A}+(1-t)\cb{B})}}{\sum_{j=1}^{N} e^{w_j\cdot (t\cr{A}+(1-t)\cb{B})}}\geq \co{p},}\;\;{t\in[0,1]}\:\: \Leftrightarrow \:\: \mathbf{X}\text{ - convex set}$$
+</p>
+<p>So given first 2 inequalities, we need to prove that the third one stays true when <span class="tooltip">\(t\in[0,1]\)</span><ins>such <em>t</em> defines all the points on the line segment connecting initial points <em class="cr">A</em> and <em class="cb">B</em></ins>.
+First, we simplify the <span class="tooltip">given inequalities</span><ins>showing this only for the first inequality but the same applies to the other 2</ins> taking in account that all exponential functions are always greater than zero:
+$$\bullet\quad{\frac{e^{w_i\cdot \cr{A}}}{\sum_{j=1}^{N} e^{w_j\cdot \cr{A}}}\geq \co{p}}\\
+\bullet\quad{\frac{1}{1+\frac{\sum_{j\neq i} e^{w_j\cdot \cr{A}}}{e^{w_i\cdot \cr{A}}}}\geq \co{p}}\quad\text{(both sides >0)}\\
+\bullet\quad{1+\sum_{j\neq i} e^{w_j\cdot \cr{A}-w_i\cdot \cr{A}}\leq \frac{1}{\co{p}}}$$
+$$\circ\quad\begin{equation}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}}\leq \frac{1-\co{p}}{\co{p}}}\end{equation}\label{ref2}$$
+</p>
+<p>And for the third inequality concerning the line segment points written as \eqref{ref2} we will need a minor rearrangement:
+$$
+\bullet\quad{\sum_{j\neq i} e^{(w_j-w_i)\cdot (t\cr{A}+(1-t)\cb{B})}\leq \frac{1-\co{p}}{\co{p}}}\\
+\circ\quad{\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}\leq \frac{1-\co{p}}{\co{p}}}
+$$
+</p>
+<p>Since we need to prove that the last inequality above stays true, let's for now assume the contrary:
+$$
+\begin{equation}{\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}\gt \frac{1-\co{p}}{\co{p}}}\end{equation}\label{ref3}
+$$</p>
+<p>
+Assuming that \eqref{ref3} is true we continue by <span class="tooltip">uniting</span><ins>since the term on the right side of the inequalities is the same</ins> it with our 2 other given inequalities:
+$$
+{\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}}\:{\gt\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}}}\\
+{\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}}\:{\gt\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}
+$$
+Let's divide the second inequality by the right side's expretion (again taking in account that exponential functions >0):
+$$
+{\frac{\sum_{j\neq i} \left (e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})}\right )^t e^{(w_j-w_i)\cdot \cb{B}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\gt 1}
+$$
+</p>
+<p>
+Now note that expretion in the wide brackets is a function of the form \(f(x)=x^t\), with <em>x>0</em> and \(t\in[0,1]\). With such <em>t</em> these functions are <span class="tooltip">concave</span><ins>consider \(\sqrt{x}\) for instance</ins>.
+Then we can use <i>Jensen's inequality</i><span class="ref">[3]</span> in the finite form for a concave function, which states that \({f\left (\frac{\sum x_j a_j}{\sum a_j} \right )} \geq {\frac{\sum f(x_j) a_j}{\sum a_j}} \) to derive stronger but simplier inequality from the last inequality above:
+$$
+\bullet\quad {\left (\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})} e^{(w_j-w_i)\cdot \cb{B}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\right )^t} \geq {\frac{\sum_{j\neq i} \left (e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})}\right )^t e^{(w_j-w_i)\cdot \cb{B}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\gt 1}\\
+\bullet\quad {\left (\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}} }{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\right )^t \gt 1}\quad (\frac{1}{t}\in[1,+\infty)\;\text{ so }x^\frac{1}{t}\text{ is monotonically increasing} )
+$$
+$$\circ\quad \begin{equation}{\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}} }{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}} \gt 1}\end{equation}\label{ref4}
+$$
+</p>
+<p>Good, let's work with the other inequality then:
+$$
+\bullet\quad {\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}}\:{\gt\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}}}\\
+\bullet\quad {\frac{\sum_{j\neq i} \left (e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})}\right )^t e^{(w_j-w_i)\cdot \cb{B}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}}\:{\gt\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}}\quad\text{(Jensen's Inequality again)}\\
+\bullet\quad {\left (\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}} }{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\right )^t}\:{\gt\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}}}{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}}\\
+\bullet\quad {\left (\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}} }{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}}\right )^{t-1}\gt 1}\quad (\frac{1}{t-1}\in(-\infty,-1]\;\text{ so }x^\frac{1}{t-1}\text{ is monotonically decreasing when } x>0 )
+$$
+$$\circ\quad \begin{equation}{\frac{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cr{A}} }{\sum_{j\neq i} e^{(w_j-w_i)\cdot \cb{B}}} \lt 1}\end{equation}\label{ref5}
+$$
+</p>
+<p>As you can see \eqref{ref4} and \eqref{ref5} contradict each other, so our assumption in \eqref{ref3} was wrong and, therefore, \({\sum_{j\neq i} e^{(w_j-w_i)\cdot (\cr{A}-\cb{B})t}e^{(w_j-w_i)\cdot \cb{B}}}\leq{\frac{1-\co{p}}{\co{p}}}\), which concludes the proof. \(\square\)
+
+</p>
+</div>
+</div>
+
+<p>
+Lastly, It is worthy to note here that the same property can be formulated simply as that <span class="important">softmax for a certain class <em>i</em> is a concave <span class="tooltip">function</span><ins>as a function of activations of the previous layer but not the whole non-linear neural network</ins></span>. Indeed, inequality in \eqref{ref1} also defines <i>the set under the graph of softmax function</i>, which we have proven to be convex and this is the only requirement for the function to be concave.
+</p>
+
+<table class="refblock">
+<tr><td>1.</td><td>Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg Corrado, Jeffrey Dean - <a href="">Distributed Representations of Words and Phrases and their Compositionality</a> [Advances in neural information processing systems, pp. 3111-3119] (2013)</td></tr>
+<tr><td>2.</td><td>Diederik P. Kingma, Danilo J. Rezendey, Shakir Mohamedy, Max Welling - <a href="https://arxiv.org/pdf/1406.5298.pdf" target="_blank">Semi-supervised Learning with Deep Generative Models</a> [Advances in neural information processing systems, pp. 3581-3589] (2014)</td></tr>
+<tr><td>3.</td><td>Wikipedia - <a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality" target="_blank">Jensen's Inequality</a> (as of 2019)</td></tr>
+</table>
+
+	</div>
+	<div id="img_overlay"><div></div><p></p><pre></pre></div>
+	<div id="back_arrow"><div></div></div>
+	<div id="footer">
+		&gt; Powered by 
+		<a href="https://jquery.com/" target="_blank"><img src="/com/logo_jquery.png" alt="JQuery" style="vertical-align: bottom"></a>
+		<a href="https://www.mathjax.org/" target="_blank"><img src="/com/logo_mathjax.png" alt="MathJax"></a>
+		<a href="https://pytorch.org/" target="_blank"><img src="/com/logo_pytorch.png" alt="PyTorch" style="vertical-align: bottom; height: 1.2em"></a>
+		<a href="https://www.wolfram.com/mathematica/" target="_blank"><img src="/com/logo_mathematica.png" alt="Wolfram Mathematica" style="height: 1.3em"></a>
+		<a href="https://stephanwagner.me/jBox" target="_blank"><img src="/com/logo_jbox.png" alt="jBox" style="height: 1.2em"></a>
+		<br>
+		&gt; This site doesn't use cookies ¯\_(ツ)_/¯
+	</div>
+	<script type="text/javascript" src="/com/main.js"></script>
+  </body>
+</html>

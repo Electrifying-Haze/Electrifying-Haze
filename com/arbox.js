@@ -398,9 +398,10 @@ function ab_resize(e){
 				ab_s[_l]['d'].css({'font-size': ab_s[_l]['font_d'], 'padding-right': (ab_s[_l]['lay']==1 ? AB_TEXT_PADDING_VERT : (_fd==1 ? AB_TEXT_PADDING-AB_IMG_PADDING : AB_TEXT_PADDING)), 'padding-left': (ab_s[_l]['lay']==1 ? AB_TEXT_PADDING_VERT : (_fd==0 ? AB_TEXT_PADDING-AB_IMG_PADDING : AB_TEXT_PADDING))});
 				if(ab_s[_l]['img'].length){
 					if(ab_s[_l]['lay']==1){
-						ab_s[_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': ab_s[_l]['vw']-2*AB_IMG_PADDING, 'height': (ab_s[_l]['vw']-2*AB_IMG_PADDING)/ab_s[_l]['imgw'], 'float': 'none'});
+						ab_s[_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': ab_s[_l]['vw']-2*AB_IMG_PADDING, 'height': (ab_s[_l]['vw']-2*AB_IMG_PADDING)/ab_s[_l]['imgw'], 'float': 'none', 'display': 'block'});
 					} else {
-						ab_s[_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': (AB_LINE_HEIGHT-2*AB_IMG_PADDING)*ab_s[_l]['imgw'], 'height': AB_LINE_HEIGHT-2*AB_IMG_PADDING, 'float': (_fd==1 ? 'right' : 'left')});
+						if(ab_s[_l]['imgw']==0) ab_s[_l]['img'].css('display', 'none')
+						else ab_s[_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': (AB_LINE_HEIGHT-2*AB_IMG_PADDING)*ab_s[_l]['imgw'], 'height': AB_LINE_HEIGHT-2*AB_IMG_PADDING, 'float': (_fd==1 ? 'right' : 'left'), 'display': 'block'});
 					}
 				}
 				ab_s[_l]['ob'].children('.time').css({'right': (_fd==1 ? ab_s[_l]['img'].width()+AB_IMG_PADDING+8 : 8)})
@@ -445,11 +446,12 @@ function ab_resize(e){
 		//vertical article
 		ab_fit_vert_height(ab_l)
 		//horizontal article possible
-		if(ab_s[ab_l]['imgw']>0&&ab_fit_hor_height(ab_l)&&ab_s[ab_l]['hh']<=ab_s[ab_l]['vh']&&ab_s[ab_l]['hh']<=AB_MIN_WIDTH_MAX_HEIGHT)ab_s[ab_l]['vh']=0
+		if(ab_s[ab_l]['imgw']>0&&ab_fit_hor_height(ab_l)&&ab_s[ab_l]['hh']<=ab_s[ab_l]['vh']&&ab_s[ab_l]['hh']<=AB_MIN_WIDTH_MAX_HEIGHT)ab_s[ab_l]['vh']=0;
 		//vertical article too big - remove picture
 		if(ab_s[ab_l]['vh']!=0&&ab_s[ab_l]['vh']>AB_MIN_WIDTH_MAX_HEIGHT){
 			ab_s[ab_l]['imgw']=0; ab_fit_vert_height(ab_l)
 		}
+		
 		
 		//increase font
 		var _w = 0; var _fh = 0; var _fd = 0;
@@ -497,9 +499,10 @@ function ab_resize(e){
 		ab_s[ab_l]['d'].css({'font-size': ab_s[ab_l]['font_d'], 'padding-right': (ab_s[ab_l]['vh']!=0 ? AB_TEXT_PADDING_VERT : (_fd==1 ? AB_TEXT_PADDING-AB_IMG_PADDING : AB_TEXT_PADDING)), 'padding-left': (ab_s[ab_l]['vh']!=0 ? AB_TEXT_PADDING_VERT : (_fd==0 ? AB_TEXT_PADDING-AB_IMG_PADDING : AB_TEXT_PADDING))});
 		if(ab_s[ab_l]['img'].length){
 			if(ab_s[ab_l]['vh']!=0){
-				ab_s[ab_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': ab_s[ab_l]['ob'].width()-2*AB_IMG_PADDING, 'height': (ab_s[ab_l]['ob'].width()-2*AB_IMG_PADDING)/ab_s[ab_l]['imgw'], 'float': 'none'});
+				if(ab_s[ab_l]['imgw']==0) ab_s[ab_l]['img'].css('display', 'none')
+				else ab_s[ab_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': ab_s[ab_l]['ob'].width()-2*AB_IMG_PADDING, 'height': (ab_s[ab_l]['ob'].width()-2*AB_IMG_PADDING)/ab_s[ab_l]['imgw'], 'float': 'none', 'display': 'block'});
 			} else {
-				ab_s[ab_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': (ab_s[ab_l]['hh']-2*AB_IMG_PADDING)*ab_s[ab_l]['imgw'], 'height': ab_s[ab_l]['hh']-2*AB_IMG_PADDING, 'float': (_fd==1 ? 'right' : 'left')});
+				ab_s[ab_l]['img'].css({'margin-right': AB_IMG_PADDING, 'margin-left': AB_IMG_PADDING, 'width': (ab_s[ab_l]['hh']-2*AB_IMG_PADDING)*ab_s[ab_l]['imgw'], 'height': ab_s[ab_l]['hh']-2*AB_IMG_PADDING, 'float': (_fd==1 ? 'right' : 'left'), 'display': 'block'});
 			}
 		}
 		ab_s[ab_l]['ob'].children('.time').css({'right': (_fd==1 ? ab_s[ab_l]['img'].width()+AB_IMG_PADDING+8 : 8)})
@@ -540,7 +543,7 @@ function ab_resize(e){
 			if(ab_n_show>=ab_c.length&&ab_c.eq(-1).hasClass('shown')){window.clearInterval(ab_int_show); return true;}
 			if(ab_n_show<ab_c.length)ab_c.eq(ab_n_show).css('opacity', 1).css('transform', 'translateY(0px)')
 			
-			var _i = ab_n_show-Math.ceil(AB_SHOW_TIME/AB_SHOW_DELAY)
+			var _i = ab_n_show-Math.ceil(AB_SHOW_TIME/AB_SHOW_DELAY)-2//little delay 2 for lagging animation synch
 			if(_i>=0){
 				ab_c.eq(_i).css('opacity', '').css('transform', '').removeClass('appearing').addClass('shown')
 			}

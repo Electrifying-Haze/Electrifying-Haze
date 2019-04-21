@@ -384,6 +384,10 @@ div.article > h2 {
 	overflow:hidden;
 	display: block;
 	font-weight: bold;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	text-size-adjust: none;
 }
 div.article > .description {
 	font-size: 0.9em;
@@ -393,6 +397,10 @@ div.article > .description {
 	padding: 0 8px 0 0;
 	margin: 4px 0 0 0;
 	overflow:hidden;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	text-size-adjust: none;
 }
 div.article > .time {
 	position: absolute;
@@ -405,6 +413,10 @@ div.article > .time {
 	color: #475d8d;
 	overflow:hidden;
 	line-height: 1.1;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	text-size-adjust: none;
 }
 div#footer {
 	margin: 50px auto 5px auto;
@@ -803,6 +815,15 @@ div.fold {
 	text-align-last: left;
 	cursor: pointer;
 }
+div.fold.h4 {
+	margin: 60px 0 20px 0;
+}
+div.fold.h4 > div:first-child {
+	font-size: 1.6em;
+}
+div.fold.h4 pre  {
+	top:7px;
+}
 div.col > div.fold {
 	margin: 0 0 20px 0;
 }
@@ -824,11 +845,11 @@ div.fold > div {
 	display:none;
 	background: #e6edf0;
 	color: #111;
-	padding: 5px 0 4px 0;
+	padding: 9px 0 4px 0;
 	border-top: solid 2px #a59eae;
 }
-div.fold div.col, div.fold p {
-	margin-bottom: 0;
+div.fold > div > div.col:last-child, div.fold > div > p:last-child {
+	margin-bottom: 5px;
 }
 div.fold pre  {
 	height: 30px;

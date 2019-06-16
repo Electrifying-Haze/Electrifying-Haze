@@ -12,6 +12,9 @@ $(window).on("load",function(){
 	
 	//jBox
 	jBox_register_all();
+	
+	//column arrows
+	$('.col.arrow').after('<div class="col_arrow"><div></div></div>')
 })
 
 var _headabout_activated = false;
@@ -247,3 +250,19 @@ function fold_toggle(e){
 }	
 $('div.fold').click(fold_toggle);
 $('div.fold pre').click(fold_toggle);
+
+//column arrows
+var _col_i=0;
+var _col_o;
+var _col_o0, _col_o1, _col_x;
+window.addEventListener('scroll', function(e) {
+	e=$('div#cbox div.col_arrow > div');
+	if(e.css('display')=='none'){return true;}
+	_col_o0 = parseInt(window.pageYOffset);
+	_col_o1 = _col_o0+$(window).height()*0.9;
+	for(_col_i=0; _col_i<e.length; _col_i++){
+		_col_o = e.eq(_col_i)
+		_col_x = parseInt(_col_o.offset().top);
+		_col_o.parent().css('opacity', Math.max(0, 3/Math.pow(_col_o1-_col_o0,2)*(-Math.pow(_col_x, 2)+(_col_o1+_col_o0)*_col_x-_col_o1*_col_o0) ))
+	}
+})

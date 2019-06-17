@@ -44,7 +44,7 @@
 <h2>Classification Layer's Vector Space: Part I - Examination</h2>
 <p class="abstract">
 In a classification <span class="tooltip">NN</span><ins>Neural Network</ins> of any complexity or structure the last layer's weights and activation function define a specific vector space, which attributes any activation of the previous layer to a certain class.
-In this introductory article an example of such space is overlooked using the multiclass Softmax last layer, which is a common classification NN setup.
+In this introductory article an example of such space is scrutinized using the multiclass Softmax last layer, which is a common classification NN setup.
 We examine the basic facts about the aforementioned space and illustrate it for a clearer understanding of how it functions. The facts discussed here also apply to general multinomial regression.
 </p>
 
@@ -87,28 +87,28 @@ And, thus, for simplicity we exclude the superscript indexes <em>[l]</em> from a
 <h4>Softmax layer intro</h4>
 <div class="col">
 <p>
-When <span class="tooltip">plain natural data</span><ins>an image or a sound wave</ins> is feeded to a NN its purpose is to convert the data from an obfuscated non-linear form to a simplier and "more linear" representation for that data by applying linear and non-linear transformations through a set of logical constructs called layers.
-At some deep layer (typically <em>L-1</em>) a data sample achieves its simpliest, abstract but unclear for human vector <span class="tooltip">representation</span><ins>which depending on the context can be refered to as <i>latent variable</i> or <i>features</i> or <i>embedding</i></ins> for that model<span class="ref">[4]</span>. And then the latent representation can be used in various useful ways depending on the task of the model. In this article we consider a classification task, where initial data samples should be attributed to their respective class or type.
+When <span class="tooltip">plain natural data</span><ins>an image or a sound wave</ins> is feeded to a NN its purpose is to convert the data from a complicated non-linear form to a simplier and "more linear" representation for that data by applying linear and non-linear transformations through a set of logical constructs called layers.
+At a certain deep layer (typically <em>L-1</em>) a data sample achieves its simpliest, abstract but unclear for humen vector <span class="tooltip">representation</span><ins>which depending on the context can be refered to as <i>latent variable</i> or <i>features</i> or <i>embedding</i></ins> for that model<span class="ref">[4]</span>. And then the latent representation can be used in various useful ways depending on the task of the model. In this article we consider a classification task, where initial data samples should be attributed to their respective class or type.
 A common way of setting up such model is to add the last layer with the \(\mathrm{softmax}()\) activation function, which translates latent representations into estimates of probabilities that a data sample belongs to each of the possible classes. So every data sample feeded to the NN is given its own probabilities vector which is passed to the cost function at the final stage, subject to optimization.
 </p>
 <p>
 Despite not easily explicable internal mechanics of a NN, one important thing that should be understood here is that <span class="important">softmax layer is capable of classifying not only representations generated from the training or validation data, but actually just any vector <em>x</em> with appropriate dimensionality</span>. In that sense softmax layer creates a special kind of space, where every point of this space is associated with a <span class="tooltip">class</span><ins>more strictly with a distribution over possible classes, since as mentioned above softmax generates a vector of probabilities</ins>.
 </p>
 <p>
-In these series of articles we will study the properties of this space. Though, unlike works which study semantic properties of word vector representations (for instance inspiring papers by Mikolov et al.<span class="ref">[1]</span>, which demonstrated vector arithmetics for discovering word similarities), we focus more on mathematical properties here. A similar space is formed by <i>Support Vector Machines</i>, which is another popular alternative to softmax in classification tasks<span class="ref">[5]</span>, though we won't discuss it here specifically.
+In these series of articles we will study the properties of this space. Though, unlike works which study semantic properties of word vector representations (for instance inspiring papers by Mikolov et al.<span class="ref">[1]</span>, which demonstrated vector arithmetics for discovering word similarities), we focus more on mathematical properties here. A similar space is formed by <i>Support Vector Machines</i>, which is another popular alternative to softmax in classification tasks<span class="ref">[5]</span>, though we will not discuss it here specifically.
 </p>
 
 <p>
 So as mentioned above softmax layer produces vectors of estimated probabilities for each input vector <em>x</em>. Such vectors are stored as rows of activation matrix \(\mathrm{A}\) for each input <em>x</em> and can be written explicitly as
 $$\begin{equation}a = (\frac{e^{w_1 \cdot x + w_{1,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}},\; \dots \;, \frac{e^{w_N \cdot x + w_{N,0}}}{\sum_{j=1}^{N}e^{w_j \cdot x + w_{j,0}}})\end{equation} \label{r1}$$
 Each element of vector <em>a</em> can be refered to as softmax function for a class <em>i</em> or \(\mathrm{softmax}_i(x)\), since it's an estimation of probability that <em>x</em> belongs to the corresponding class \(i=1\dots N\). Note that the sum of elements of vector <em>a</em> always equals to <b>1</b> by design, which guarantees that the estimated probabilities are a valid discrete probability distribution.
-Exponential functions also grant that the values will be greater than zero. The arguments to the exponential functions are elements of vector <em>z</em>, which is the linear part of the layer:
+Exponential functions also provide that the values will be greater than zero. The arguments to the exponential functions are elements of vector <em>z</em>, which is the linear part of the layer:
 $$\begin{equation}z = (w_1 \cdot x + w_{1,0},\;\dots\;,w_N \cdot x + w_{N,0})\end{equation}\label{r2} $$
 </p>
 <p>
 <em>z</em> consists of simple <i>scalar products</i> of weight vectors \(w_1\dots w_N\) with the vector <em>x</em> plus biases.
 It can be noticed that function <span class="important">\(\mathrm{softmax}_i(z)\) is monotonic in respect to every element of vector <em>z</em></span>.
-Indeed, elements of vector <em>z</em> can be divided into 2 groups: the ones that are present only in the denominator of \(\mathrm{softmax}_i\) and the single one that is included both into numerator and denominator, which we will be calling <span class="tooltip">key element</span><ins>it is also the \(i^{th}\) element of vector <em>z</em></ins>.
+Indeed, elements of vector <em>z</em> can be divided into 2 groups: the ones that are present only in the denominator of \(\mathrm{softmax}_i\) and the single one that is included both into numerator and denominator, which we will be calling <span class="tooltip">the key element</span><ins>it is also the \(i^{th}\) element of vector <em>z</em></ins>.
 The first group elements are monotonically decreasing for \(softmax_i\), because any gain in denominator reduces fraction's value. Any gain in the key element, on the other hand, forces \(\mathrm{softmax}_i\) to incease, because with other components of denominator staying put this gain reduces the relative difference between numerator and denominator.
 In other words, when the \(i^{th}\) element of a vector <em>z</em> is increased with everything else unchanged, then the probability of the \(i^{th}\) class also increases, but falls for all other classes.
 Considering this fact and despite the non-linear nature of the softmax activation, we can learn some basics of the softmax's layer vector space by studying only vector <em>z</em> itself, which is done in the next section.
@@ -432,8 +432,8 @@ still exists when \(N\leq n+1\).
 <p class="wide">
 Another directly unrelated to what we have discussed before and probably overall undesirable property of softmax layer is that <span class="important">a high number of possible classes <em>N</em> leads to large volumes of <span class="tooltip">mixed noisy distributions</span><ins>by this we mean areas where not a single probability exceeds 50%. In most classification tasks such points do not make much sense, because we want to make a mapping between a data sample and its single class, but not, say, 30% for one class and 10% for all other classes.</ins> in the class space</span>.
 Imagine a NN has to classify data among 100 possible classes, then there are only \(2^{100}-1\) combinations of distributions with certain classes having equal and dominating probability, while only 100 of those combinations are useful for the task.
-So it requires a greater accuracy from previous layers of neural network, because a mistake in few coordinates of vector representations can lead to a point with a noisy distribution.
-However, having <span class="tooltip">longer weight vectors</span><ins>which as we have mentioned already increases sensitivity of the space</ins> and a large dimensionality of the inputs <em>n</em> tackles this problem.
+It may seem not so formidable as the space is infinite and the clean areas are also infinite, however, in practice distant points may become unachievable because inputs tend to be concentrated around the center due to permutations in the previous array of layers and bounding activations.
+But having <span class="tooltip">longer weight vectors</span><ins>which as we have mentioned already increases sensitivity of the space</ins> and a large dimensionality of the inputs <em>n</em> tackles this problem.
 <span class="scroll" data-target="#img11">Figure 9</span> demonstrates that an increase in the number of classes allocates <span class="tooltip">more space</span><ins>The transparent area in the center becomes bigger and 2 additional white stripes between clean areas appear. Overall contours become pale, which means that a greater percentage of the space is given to points with 50-70% per class, which is also an undesirable output</ins> to noisy areas compared to our basic example <span class="scroll" data-target="#img7">(fig. 5)</span> with the same dimensionality <em>n</em>.
 <div class="img" id="img11"><div style="padding-bottom: 100%;">
 <object data="a1_w5.svg" type="image/svg+xml"><img src="a1_w5.svg" alt="softmax space with 5 classes" /></object>
@@ -441,9 +441,6 @@ However, having <span class="tooltip">longer weight vectors</span><ins>which as 
 <p>figure 9 - class space for <em>N=5</em> and <em>n=2</em></p>
 <pre></pre>
 </div>
-</p>
-<p>
-While it may seem not so important as the space is infinite and the clean areas are also infinite, in practice good points may become unachievable then because inputs tend to be concentrated around the center due to permutations in the previous array of layers and bounding activations.
 </p>
 <p>
 On the other hand, when <em>N>n+1</em> not all probability distributions become achievable generally. For instance, in <span class="scroll" data-target="#img11">figure 9</span> you won't be able to find a point with the \({\{33\%\;33\%\;33\%\approx\!0\%\approx\!0\%\}}\) distribution, while in the basic example <span class="scroll" data-target="#img7">(fig. 5)</span> all combinations existed.
@@ -552,6 +549,33 @@ Lastly, For the alternative classification approach with linear Support Vector M
 <tr><td>4.</td><td>Yoshua Bengio, Aaron Courville, Pascal Vincent - <a href="https://arxiv.org/pdf/1206.5538.pdf" target="_blank">Representation Learning: A Review and New Perspectives</a> [IEEE Transactions on Pattern Analysis and Machine Intelligence 35, section 3.4] (2013)</td></tr>
 <tr><td>5.</td><td>Yichuan Tang - <a href="https://arxiv.org/pdf/1306.0239v4.pdf" target="_blank">Deep Learning using Linear Support Vector Machines</a> (2015)</td></tr>
 </table>
+
+<div id="remark42"></div>
+<script>
+  var remark_config = {
+    host: "http://127.0.0.1:50910",
+    site_id: 'a1',
+    components: ['embed'], // optional param; which components to load. default to ["embed"]
+                          // to load all components define components as ['embed', 'last-comments', 'counter']
+                          // available component are:
+                          //     - 'embed': basic comments widget
+                          //     - 'last-comments': last comments widget, see `Last Comments` section below
+                          //     - 'counter': counter widget, see `Counter` section below
+    url: 'PAGE_URL', // optional param; if it isn't defined window.location.href will be used
+    max_shown_comments: 10, // optional param; if it isn't defined default value (15) will be used
+    theme: 'light', // optional param; if it isn't defined default value ('light') will be used
+    page_title: 'Remark42' // optional param; if it isn't defined `document.title` will be used
+  };
+
+  (function(c) {
+    for(var i = 0; i < c.length; i++){
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + '/web/' +c[i] +'.js';
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(remark_config.components || ['embed']);
+</script>
 
 	</div>
 	<div id="img_overlay"><div></div><p></p><pre></pre></div>

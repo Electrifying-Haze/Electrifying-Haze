@@ -605,6 +605,19 @@ h4 {
 	text-align: justify;
 	text-align-last: left;
 }
+h5 {
+	font-size: 2.2em;
+	font-family: 'Sniglet', cursive;
+	margin: 75px 0 10px 0;
+	padding: 0;
+	line-height: 1.2;
+	overflow:hidden;
+	display: block;
+	font-weight: bold;
+	text-align: justify;
+	text-align-last: left;
+	color: #56626b;
+}
 div.col {
 	text-align: justify;
 	text-align-last: left;

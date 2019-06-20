@@ -15,6 +15,9 @@ $(window).on("load",function(){
 	
 	//column arrows
 	$('.col.arrow').after('<div class="col_arrow"><div></div></div>')
+	
+	//add comments section if they are loaded
+	if($('#remark42').length&&$('#remark42').children('iframe').length)$('#remark42').before('<h5>Comments</h5>')
 })
 
 var _headabout_activated = false;

@@ -937,7 +937,7 @@ div.col > ul {
 h5 {
 	font-size: 2.2em;
 	font-family: 'Sniglet', cursive;
-	margin: 69px 0 10px 0;
+	margin: 69px 3px 10px 3px;
 	padding: 0;
 	line-height: 1.2;
 	overflow:hidden;
@@ -948,5 +948,5 @@ h5 {
 	color: #56626b;
 }
 div#remark42 {
-	margin: 0 2px 0 2px;
+	margin: 0 3px 0 3px;
 }
